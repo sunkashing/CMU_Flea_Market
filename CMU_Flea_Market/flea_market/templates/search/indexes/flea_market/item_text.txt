@@ -1,0 +1,3 @@
+{{ object.name }}
+{{ object.cat_str }}
+{{ object.description }}

@@ -1,0 +1,296 @@
+{% extends "flea_market/base.html" %}
+{% load static %} 
+
+{% block title%}
+<title>Product</title>
+{% endblock %} 
+
+{% block css_js %}
+    <script src="{% static 'flea_market/js/refresh.js' %}?{% now 'U' %}"></script>
+    <script src="{% static 'flea_market/js/product.js' %}?{% now 'U' %}"></script>
+    <link rel='stylesheet' href='https://cdn.materialdesignicons.com/1.1.34/'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css">
+    <script src="https://unpkg.com/swiper/js/swiper.min.js"></script>
+{% endblock %} 
+
+{% block body %}
+<main role="main">
+    <section class="pt-5 pb-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="container">
+                    <div class="product-page-block row">
+                         <div class="product-page-photo col">
+                                {% if picture_id_list %}
+                                    <div class="swiper-container">
+                                        <div class="swiper-wrapper">
+                                            {% for pic_id in picture_id_list %}
+                                                <div class="swiper-slide">
+                                                    <img class="card-img-top" src="{% url 'get-item-photo-list' pic_id %}" alt="Card image">
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="swiper-pagination"></div>
+                                    </div>
+                                    <script>
+                                        var swiper = new Swiper('.swiper-container', {
+                                            direction: 'horizontal',
+                                            slidesPerView: 1,
+                                            spaceBetween: 30,
+                                            mousewheel: true,
+                                            pagination: {
+                                              el: '.swiper-pagination',
+                                              clickable: true,
+                                            },
+                                        });
+                                    </script>
+
+                                {% else %}
+                                    <img class="card-img-top" src="{% url 'item-photo' curr_item.id %}" alt="Card image">
+                                {% endif %}
+                        </div>
+
+                        <div class="product-page-content col">
+                            <ul class="product-content" style="padding-inline-start: 5px">
+
+                                {% if user == curr_item.seller.user or user == curr_item.buyer.user %}
+                                
+                                {% if curr_item.available_status == False%}
+                                <ul style="text-align: center; padding-inline-start: 20px">
+                                    <div class="info-name"> {{ transaction.product.name }} </div>
+                                </ul>
+                                <hr>
+                                <ul style="padding-inline-start: 20px">
+                                    <i class="material-icons prefix" style="line-height: 44px">account_circle</i>
+                                    <div class="info-row" style="font-weight: bold">Buyer Name</div>
+                                        <div style="text-align:center;">
+                                    {% if transaction.buyer.picture %}
+                                          <img src="{% url 'customer_photo' transaction.buyer.id%}" class="buyer-photo">
+                                      {% else %}
+                                          <img src="{% static 'flea_market/images/av.png'%}" class="buyer-photo" width="128">
+                                      {% endif %}
+                                     {% if user == curr_item.buyer.user %}
+                                     <a href="{% url 'author' %}">{{item_owner_Name }}</a>
+                                        
+                                    {% else %}
+                                    <a href="{% url 'buyer_page'  curr_item.id %}">{{item_owner_Name }}</a>
+                                    {% endif %}
+                                        </div>
+                                    </ul>
+                                    
+
+                                <ul class="ul-row" style="padding-inline-start: 20px">
+                                    {% for cat in categories %}
+                                        {% if curr_item.cat_str == cat.name %}
+                                            <i class="material-icons prefix" style="line-height: 44px">{{cat.icon_name}}</i>
+                                            <div class="info-row" style="font-weight: bold">{{ cat.name }}</div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+
+
+                                <ul class="ul-row" style="padding-inline-start: 20px">
+                                    <i class="material-icons prefix" style="line-height: 44px">attach_money</i>
+                                    <div class="info-row" style="font-weight: bold">{{ curr_item.price }}</div>
+                                </ul>
+
+                                <ul style="padding-inline-start: 20px">
+                                    <i class="material-icons prefix" style="line-height: 44px">create</i>
+                                    <div class="info-row">{{ curr_item.description }}</div>
+
+                                </ul>
+
+                                <ul style="padding-inline-start: 20px">
+                                    <i class="material-icons prefix" style="line-height: 44px">access_time</i>
+                                    <div class="info-row">Transaction completed at: </div>
+                                    <div class="info-row">{{ transaction.endTime }}</div>
+                                </ul>
+
+                                {% else %}
+
+
+                                <form class="update_Prod_form" id="update-prod-form" method="post" action="{% url 'product' curr_item.id %}">
+                                    {% csrf_token %}
+                                    <div class="form-row">
+                                        <div class="col">
+                                            <br>
+                                            <ul style="padding-inline-start: 20px">
+                                                <i class="material-icons prefix font-size" style="line-height: 44px">title</i>
+                                                <div class="info-row">Item Name: </div>
+                                                <input type="text" class="form-control" name = "product_name" value="{{ curr_item.name }}">
+                                            </ul>
+                                            <br>
+                                            <hr>
+                                            <ul style="padding-inline-start: 20px">
+                                                <i class="material-icons prefix font-size" style="line-height: 44px">build</i>
+                                                <div class="info-row">Item Ststus: </div>
+                                                <div><span>Old&nbsp;&nbsp;&nbsp;<input type="range" min="0" max="5" step="0.5" class="form-control-sm custom-range" id="product_status" value="{{ curr_item.status }}" name = "product_status">
+                                                &nbsp;&nbsp;&nbsp;New</span></div>
+                                            </ul>
+
+                                            <hr>
+                                            <ul style="padding-inline-start: 20px">
+                                                <i class="material-icons prefix font-size" style="line-height: 44px">attach_money</i>
+                                                <div class="info-row">Price: </div>
+                                               <input type="text" class="form-control" name = "product_price" value="{{ curr_item.price }}">
+                                            </ul>
+
+                                            <hr>
+
+
+                                            <ul style="padding-inline-start: 20px">
+                                                <i class="material-icons prefix font-size" style="line-height: 44px">create</i>
+                                                <div class="info-row">Description: </div>
+                                                <textarea type="text"  class="form-control" id =  "edit_product_descpt" name = "product_descpt" >{{ curr_item.description }}</textarea>
+
+                                            </ul>
+
+                                            <hr>
+                                            <br>
+                                            <ul style="padding-inline-start: 20px">
+                                                <div>
+                                                    <div style="display: inline-block">
+                                                        <button type="submit" class="btn btn-secondary">Save Change</button>
+                                                    </div>
+                                                    <div style="display: inline-block; margin-left: 10%">
+                                                        <small class="d-block"><a class="btn btn-secondary" href="{%url 'delete_item' curr_item.id %}">Delete item</a></small>
+                                                    </div>
+                                                </div>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </form>
+                                {% endif %}
+                                
+
+
+                                {% else %}
+                                    <ul style="text-align: center; padding-inline-start: 20px">
+                                        {% if curr_item.available_status == True %}
+                                            <div class="info-name">{{ curr_item.name }} <span class="info-name" id="info-status"></span></div>
+                                            <input type = "hidden" id="info-status-num" value={{curr_item.status}}>
+                                                <script>
+                                                        let statusNum = document.getElementById("info-status-num")
+                                                        if (statusNum <= 1) {
+                                                            $('#info-status').html("(fair)");
+                                                        } else if (statusNum <= 2) {
+                                                            $('#info-status').html("(good)");
+                                                        } else if (statusNum <= 3) {
+                                                            $('#info-status').html("(very good)");
+                                                        } else if (statusNum <= 4) {
+                                                            $('#info-status').html("(excellent)");
+                                                        } else {
+                                                            $('#info-status').html("(brand new)");
+                                                        }
+                                                </script>
+                                        {% else %}
+                                            <div class="info-name">{{ curr_item.name }}&nbsp(Sold Out)</div>
+                                        {% endif %}
+                                    </ul>
+                                    <hr>
+                                    <ul class="ul-row" style="padding-inline-start: 20px">
+                                        {% for cat in categories %}
+                                            {% if curr_item.cat_str == cat.name %}
+                                                <i class="material-icons prefix" style="line-height: 44px">{{cat.icon_name}}</i>
+                                                <div class="info-row" style="font-weight: bold">{{ cat.name }}</div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+
+                                    <ul class="ul-row" style="padding-inline-start: 20px">
+                                        <i class="material-icons prefix" style="line-height: 44px">attach_money</i>
+                                        <div class="info-row" style="font-weight: bold">{{ curr_item.price }}</div>
+                                    </ul>
+
+                                    <ul style="padding-inline-start: 20px">
+                                        <i class="material-icons prefix" style="line-height: 44px">create</i>
+                                        <div class="info-row" id="id_product_description">{{ description_replaced }} </div>
+                                        <script>
+                                            let pro_des = document.getElementById("id_product_description");
+                                            let pro_des_str =  pro_des.innerText;
+                                            let tmp = pro_des_str.replace(/<br>/g,'<br>');
+                                            $(pro_des).html(tmp);
+                                        </script>
+                                    </ul>
+
+                                    <ul style="padding-inline-start: 20px">
+                                        <i class="material-icons prefix" style="line-height: 44px">place</i>
+                                        <span id="load_location" style="padding: 10px"></span>
+                                    </ul>
+                                    <hr>
+                                
+                            </ul>
+
+                            
+                                <div class="geo-location-user-page row">
+                                    <input id="prod_location" type="hidden" value={{ item_geo }}>
+                                    <!-- <input id="my_location"></input> -->
+                                    <div id="product_map"></div>
+                                    <div id="mode-selector" class="prod_controls">
+                                        <input type="radio" name="type" id="changemode-walking" checked="checked">
+                                        <label for="changemode-walking">Walking</label>
+
+                                        <input type="radio" name="type" id="changemode-transit">
+                                        <label for="changemode-transit">Transit</label>
+
+                                        <input type="radio" name="type" id="changemode-driving">
+                                        <label for="changemode-driving">Driving</label>
+                                    </div>
+                                    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBetnQBMMKR6xmJXho38h5xJNpAZ2SNAYQ&libraries=places&callback=loadProdLocation" async defer></script>
+                                </div>
+
+                                <hr>
+
+                                    <div class="contact-seller-and-buy-now">
+                                        <div class="contact-seller">
+                                            <small class="d-block"><a class="btn btn-sm btn-gray200" href="{% url 'seller_page' curr_item.id %}"><i class="fa fa-external-link"></i> Contact seller</a></small>
+                                        </div>
+                                        {% if curr_item.available_status == True %}
+                                        <div class="buy-it-now">
+                                            <small class="d-block"><a class="btn btn-sm btn-gray200" href="{%url 'creat_order' curr_item.id %}"><i class="fa fa-external-link"></i> Buy it now</a></small>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+
+                            {% endif %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+
+                <!-- Begin Comments -replace demowebsite with your own id
+            ================================================== -->
+            <div class="comment-container">
+                <div id="comments" class="mt-4">
+                    <div id="disqus_thread">
+                    </div>
+                    <script type="text/javascript">
+                        var disqus_shortname = 'demowebsite';
+                        var disqus_developer = 0;
+                        (function() {
+                            var dsq = document.createElement('script');
+                            dsq.type = 'text/javascript';
+                            dsq.async = true;
+                            dsq.src = window.location.protocol + '//' + disqus_shortname + '.disqus.com/embed.js';
+                            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                        })();
+                    </script>
+                    <noscript>
+                Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+                </noscript>
+                </div>
+            </div>
+                <!--End Comments
+            ================================================== -->
+        </div>
+    </section>
+
+</main>
+{% endblock %}

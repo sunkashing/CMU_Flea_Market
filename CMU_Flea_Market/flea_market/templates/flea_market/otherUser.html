@@ -1,0 +1,198 @@
+{% extends "flea_market/base.html" %}
+{% load static %}
+{% load ratings %}
+
+{% block title%}
+    <title>Author</title>
+{% endblock %}
+
+{% block css_js %}
+    <script  src="{% static 'flea_market/js/map.js' %}?{% now 'U' %}"></script>
+{% endblock %}
+
+
+{% block body %}
+    <main role="main">
+    <div class="jumbotron border-round-0 min-50vh" style="background-image:url(https://images.unsplash.com/photo-1541701571234-ffe036ddf1d2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80);">
+    </div>
+
+    <div class="container mb-4">
+        {% if page_owner.picture %}
+            <img src="{% url 'customer_photo' page_owner.user_id %}" class="mt-neg100 mb-4 rounded-circle" width="128">
+        {% else %}
+            <img src="{% static 'flea_market/images/av.png'%}" class="mt-neg100 mb-4 rounded-circle" width="128">
+        {% endif %}
+
+        <div class="name-location">
+
+                <div class="user-name">
+                    <h1 class="font-weight-bold title">{{customer_Name}}</h1>
+                    {% ratings page_owner read_only=True%}
+                </div>
+
+                  <div class="accordion" id="accordionExample">
+                    <div class="card">
+                      <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                          <button class="btn btn-menu" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Welcome word
+                          </button>
+                        </h2>
+                      </div>
+
+                  
+                      <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                        <div class="card-body">
+                                    <div class = "user-profile">
+                                        <input type = "hidden" id = "user_prefer_geo" value = {{user_Geo}} > </input>
+                                        <div>
+                                            Welcome to my page!
+                                            Please contact me with {{user_email}} or <a href = "mailto: {{user_email}}">Send Email</a>
+  
+                                        </div>
+                                        <br>
+                                        <div id = "id_user_bio">
+                                            {{page_owner.customer_log}}
+                                        </div>
+                                    </div>
+                                    <br/>
+                        </div>
+                      </div>
+                    
+                    </div>
+                    <div class="card">
+                      <div class="card-header" id="headingTwo">
+                        <h2 class="mb-0">
+                          <button class="btn btn-menu collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            His/Her Prefered Trading Location:
+                          </button>
+                        </h2>
+                      </div>
+                      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                        <div class="card-body">
+                                    <div class="geo-location-user-page">
+                                        <!-- <input id="pac-input" class="controls" type="text" placeholder="Search Box"> -->
+                                        <div id="map"></div>
+                                        <div style="display: none">
+                                        </div>
+                                        <div id="infowindow-content">
+                                            <span id="place-name" class="title"></span><br>
+                                            <span id="place-address"></span>
+                                        </div>
+                                        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBetnQBMMKR6xmJXho38h5xJNpAZ2SNAYQ&libraries=places&callback=userSetLocation"
+                                        async defer></script>
+                                    </div>
+                                    <br/>
+                                    <br/>
+                                    <span>
+                                        User prefered trading location is:
+                                        <div class = "prefered_location" id = "load_location"> </div>
+                                        <br/>
+                                        <br/>
+                                            {% csrf_token %}
+
+                            
+                                    </span>           
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card">
+                      <div class="card-header" id="headingThree">
+                        <h2 class="mb-0">
+                          <button class="btn btn-menu collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            Product
+                          </button>
+                        </h2>
+                      </div>
+                      <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <div class="container-fluid mb-5">
+                                <span >
+                                    <h3>Item on Sale</h3>
+                                    <div class="row">
+                                        <div class="card-columns" style="-webkit-column-count: 3; column-count: 3;">
+                                            {% for item in on_sale_items %}
+                                                <div class="cut-protect">
+                                                    <div class="card card-pin">
+                                                        <a href="{% url 'product' item.id %}" class="card-link">
+                                                            <div class="item_image_container item_image_container_pin" style="z-index: {{ forloop.revcounter }}{{ forloop.revcounter }}">
+                                                                <img class="card-img" src="{% url 'item-photo' item.id %}" alt="Card image">
+                                                                <div class="overlay">
+                                                                    <button class="item-button item-category">
+                                                                        {% for cat in categories %}
+                                                                            {% if item.cat_str == cat.name %}
+                                                                                <i class="item-icon-size material-icons prefix">{{ cat.icon_name }}</i>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </button>
+                                                                    {% if item.seller_id != page_owner.id %}
+                                                                        {% if item in page_owner.follow_item.all %}
+                                                                            <button class="item-button item-follow" id="item-follow-button-{{ item.id }}" style="transform: translateY(-30px)">
+                                                                                <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite</i>
+                                                                            </button>
+                                                                        {% else %}
+                                                                            <button class="item-button item-follow" id="item-follow-button-{{ item.id }}">
+                                                                                <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite_border</i>
+                                                                            </button>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                    <input class="hidden-item-id" type="hidden" value={{ item.id }}>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                      </div>
+                                </span>
+                            
+                                <span><h3>Item Sold</h3>
+                                    <div class="row">
+                                        <div class="card-columns" style="-webkit-column-count: 3; column-count: 3;">
+                                            {% for item in sold_items %}
+                                                <div class="cut-protect">
+                                                    <div class="card card-pin">
+                                                        <a href="{% url 'product' item.id %}" class="card-link">
+                                                            <div class="item_image_container item_image_container_pin" style="z-index: {{ forloop.revcounter }}{{ forloop.revcounter }}">
+                                                                <img class="card-img" src="{% url 'item-photo' item.id %}" alt="Card image">
+                                                                <div class="overlay">
+                                                                    <button class="item-button item-category">
+                                                                        {% for cat in categories %}
+                                                                            {% if item.cat_str == cat.name %}
+                                                                                <i class="item-icon-size material-icons prefix">{{ cat.icon_name }}</i>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </button>
+                                                                    {% if item.seller_id != page_owner.id %}
+                                                                        {% if item in page_owner.follow_item.all %}
+                                                                            <button class="item-button item-follow" id="item-follow-button-{{ item.id }}" style="transform: translateY(-30px)">
+                                                                                <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite</i>
+                                                                            </button>
+                                                                        {% else %}
+                                                                            <button class="item-button item-follow" id="item-follow-button-{{ item.id }}">
+                                                                                <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite_border</i>
+                                                                            </button>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                    <input class="hidden-item-id" type="hidden" value={{ item.id }}>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                      </div>
+                                </span>
+                            
+                                </div>
+                      </div>
+                    </div>
+                  </div>
+ 
+        </div>
+    </div>
+
+    </main>
+{% endblock %}
+

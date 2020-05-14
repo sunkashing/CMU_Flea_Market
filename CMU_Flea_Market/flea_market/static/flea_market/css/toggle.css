@@ -1,0 +1,24 @@
+.drop {
+  cursor: pointer;
+  display: inline-block;
+  background: #090;
+}
+
+.drop + input{
+ display: none; /* hide the checkboxes */
+}
+
+.drop + input + .hide{
+  display:none;
+}
+
+.drop + input:hover + .hide{
+  display:inline-block;
+  box-shadow: 1px 8px 16px 1px rgba(0,0,0,0.8);
+    border-radius: 0 15px 15px 0;
+  -webkit-transition: ease 2s;
+}
+
+.right {
+  display: inline-block;
+}

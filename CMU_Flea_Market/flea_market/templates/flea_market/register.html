@@ -1,0 +1,99 @@
+{% extends "flea_market/login.html" %}
+{% load static %}
+
+{% block title%}
+    <title>Register</title>
+{% endblock %}
+{% block css_js %}
+    <script  src="{% static 'flea_market/js/register.js' %}?{% now 'U' %}"></script>
+  
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBetnQBMMKR6xmJXho38h5xJNpAZ2SNAYQ&callback=initMap">
+    </script>
+    <!-- <script src="jquery.geocomplete.js"></script>  -->
+    
+    <link rel="stylesheet" href="{% static 'flea_market/css/overlay-window.css' %}?{% now 'U' %}">
+
+{% endblock %}
+
+
+{% block body %}
+    <div id="login-page" class="row" ng-app="mainModule" ng-controller="mainController">
+        <div class="col s12 z-depth-6 card-panel">
+            <form class="register-form" id="register-form" method="post" action="{% url 'register' %}">
+                {% csrf_token %}
+                <div class="row">
+                </div>
+                {% for field in form.visible_fields %}
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix">{{ field.help_text }}</i>
+                            {{ field }}
+                            {% if field.help_text != 'cake' %}
+                                <label for={{ field.auto_id }} data-error="wrong" data-success="right">{{ field.label }}</label>
+                            {% endif %}
+                            {% if field.help_text == 'home' %}
+                                <a id="click_button" class="btn" onclick="getLocation()">Locate me</a>
+                                <a id="locating"></a>
+                                <input type="hidden" name="hidden_geo_location" id="hidden_geo_location" value="1" onchange="geocodeLatLng()">
+                                <input type="hidden" name="hidden_geo_lat_long" id="hidden_geo_lat_long" value="1">
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="row">
+                    <div class="input-field col s12">
+                        <a class="btn waves-effect waves-light col s12" onclick="document.getElementById('register-form').submit()">Register</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6 m6 l6">
+                        <p class="margin medium-small"><a href="#"></a></p>
+                    </div>
+                    <div class="input-field col s6 m6 l6">
+                        <p class="margin right-align medium-small"><a href="{% url 'login' %}">Back to login</a></p>
+                    </div>
+                </div>
+            </form>
+
+            {% for error in form.non_field_errors %}
+                <div class="errorlist">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div id="light" class="white_content">
+
+            <div class="category_container">
+                <div class="block_title">Choose your preferences</div>
+                <div class="categories">
+                    {% for category in categories %}
+                        <div class="category">
+                            <div class="category_picture_container">
+                                <i class="material-icons prefix font-size">{{ category.icon_name }}</i>
+                            </div>
+
+                            <div class="category_name_container">
+                                <p class="category_name" id="id_category_link_{{ category.name }}">{{ category.name }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="ok-button-div">
+                <a class="btn" id="ok-button">
+                    Ok
+                </a>
+            </div>
+            <div class="cancel-button-div">
+                <a class="btn" id="cancel-button">
+                    Cancel
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

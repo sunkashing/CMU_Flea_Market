@@ -1,0 +1,61 @@
+{% extends "flea_market/base.html" %}
+{% load static %}
+
+{% block title%}
+    <title>Product</title>
+{% endblock %}
+
+{% block css_js %}
+    <script  src="{% static 'flea_market/js/map.js' %}?{% now 'U' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <main role="main">
+        <section class="bg-gray200 pt-5 pb-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-7">
+                        <article class="card">
+                            <img class="card-img-top mb-2" src="http://fleamarket.imgix.net/car-604019_1920.jpg?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e0245bb4e87077312cc3d102e68c1efd&auto=format&fit=crop&w=735&q=80" alt="Card image">
+
+                            <img class="card-img-top mb-2" src="{% url 'item-photo' curr_item.id %}" alt="Card image">
+                            <div class="card-body">
+
+                                <h1 class="card-title display-4">
+                                    {{ curr_item.name}} </h1>
+                                <ul>
+                                    Price: {{ curr_item.price }}
+                                </ul>
+                                <ul>
+                                    Description: {{ curr_item.description }}
+                                </ul>
+                                <ul>
+                                Item is at:
+                                <div class = "prefered_location" id = "load_location">
+                                    <!-- Item is at:  -->
+                                </div>
+                                </ul>
+
+                                <div class="geo-location-user-page">
+                                    <input id  = "prod_location" type = "hidden"  value = {{item_geo}}></input>
+                                    <div id="product_map"></div>
+                                    <div style="display: none">
+                                    </div>
+                                    <div id="infowindow-content">
+                                        <span id="place-name" class="title"></span><br>
+                                        <span id="place-address"></span>
+                                    </div>
+                                    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBetnQBMMKR6xmJXho38h5xJNpAZ2SNAYQ&libraries=places&callback=loadProdLocation"
+                                    async defer></script>
+                                </div>
+                                <small class="d-block"><a class="btn btn-sm btn-gray200" href="#"><i class="fa fa-external-link"></i> Contact seller</a></small>
+
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+{% endblock %}

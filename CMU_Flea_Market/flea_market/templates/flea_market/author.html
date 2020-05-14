@@ -1,0 +1,390 @@
+{% extends "flea_market/base.html" %}
+{% load static %}
+{% load ratings %}
+
+{% block title%}
+    <title>Author</title>
+{% endblock %}
+
+{% block css_js %}
+    <script  src="{% static 'flea_market/js/map.js' %}?{% now 'U' %}"></script>
+    <script src="{% static 'flea_market/js/index.js'%}?{% now 'U' %}"></script>
+
+{% endblock %}
+
+{% block body %}
+    <main role="main">
+    <div class="jumbotron border-round-0 min-50vh" style="background-image:url(https://images.unsplash.com/photo-1541701571234-ffe036ddf1d2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80);">
+    </div>
+
+    <div class="container mb-4">
+        {% if customer.picture %}
+            <img src="{% url 'customer_photo' customer.user_id %}" class="mt-neg100 mb-4 rounded-circle" width="128">
+        {% else %}
+            <img src="{% static 'flea_market/images/av.png'%}" class="mt-neg100 mb-4 rounded-circle" width="128">
+        {% endif %}
+
+        <div class="name-location">
+
+                <div class="user-name">
+                    <h1 class="font-weight-bold title">{{customer_Name}}</h1>
+                    {% ratings customer read_only=True%}
+                </div>
+
+                  <div class="accordion" id="accordionExample">
+                    <div class="card">
+                      <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                          <button class="btn btn-menu" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Intro
+                          </button>
+                        </h2>
+                      </div>
+
+                  
+                      <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                        <div class="card-body">
+                                    <div class = "user-profile">
+                                        <input type = "hidden" id = "user_prefer_geo" value = {{user_Geo}} > </input>
+                                        <form enctype="multipart/form-data" action="{% url 'update_cust_info' %}" method="post" class="add-form">
+                                            <table>
+                                                {% for hidden in Customer_form.hidden_fields %}
+                                                {{ hidden }}
+                                                {% endfor %}
+                                                {% for field in Customer_form.visible_fields %}                                <tr>
+                                                        <td>{{field.label_tag}}</td>
+                                                        <td>{{field}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="error">
+                                                            {% for error in field.errors %} {{error}} {% endfor %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                <tr>
+                                                    <td>
+                                                        <button class="btn btn-secondary btn-sm" id = "id_update_profile_button" type="submit" value="Submit">Save</button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                                {% csrf_token %}
+                                            </form>
+                                    </div>
+                                    <br/>
+                        </div>
+                      </div>
+                    
+                    </div>
+                    <div class="card">
+                      <div class="card-header" id="headingTwo">
+                        <h2 class="mb-0">
+                          <button class="btn btn-menu collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Location
+                          </button>
+                        </h2>
+                      </div>
+                      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                        <div class="card-body">
+                                    <div class="geo-location-user-page">
+                                        <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+                                        <div id="map"></div>
+                                        <div style="display: none">
+                                        </div>
+                                        <div id="infowindow-content">
+                                            <span id="place-name" class="title"></span><br>
+                                            <span id="place-address"></span>
+                                        </div>
+                                        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBetnQBMMKR6xmJXho38h5xJNpAZ2SNAYQ&libraries=places&callback=userSetLocation"
+                                        async defer></script>
+                                    </div>
+                                    <br/>
+                                    <br/>
+                                    <span>
+                                        Your prefered trading location is:
+                                        <div class = "prefered_location" id = "load_location"> </div>
+                                        <br/>
+                                        Your new trading location will be:
+                                        <div class = "prefered_location" id = "change_location"></div>
+                            
+                                        <br/>
+                                        <form enctype="multipart/form-data" action="{% url 'update_location' %}" method="post" class="update_location">
+                                            <input  name = "new_geo_location" type="hidden" id="update_location"  value="null">
+                                            <button name = "submit_location" type="submit" class="btn btn-secondary btn-sm">Save Address</button>
+                                            {% csrf_token %}
+                                        </form>
+                            
+                                    </span>           
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <div class="card">
+                      <div class="card-header" id="headingFour">
+                        <h2 class="mb-0">
+                          <button class="btn btn-menu collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            Transaction
+                          </button>
+                        </h2>
+                      </div>
+                      <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
+                          {% for transaction in transaction_buyer_list %}
+                              <div class="container-for-record" style="display: flex;">
+                                    <div class="photo-bind float-left">
+                                        {% if transaction.buyer.picture %}
+                                            <img src="{% url 'customer_photo' transaction.buyer.id%}" class="buyer-photo">
+                                        {% else %}
+                                            <img src="{% static 'flea_market/images/av.png'%}" class="buyer-photo" width="128">
+                                        {% endif %}
+                                        {% if transaction.seller.picture %}
+                                            <img src="{% url 'customer_photo' transaction.seller.id%}" class="seller-photo">
+                                        {% else %}
+                                            <img src="{% static 'flea_market/images/av.png'%}" class="seller-photo" width="128">
+                                        {% endif %}
+                                    </div>
+                                    <div class="transaction-info">
+                                        <div class="transaction-names">
+                                            <span><strong>You</strong> paid</span>
+                                            <span><strong><a href="{% url 'seller_page'  transaction.product.id %}">{{ transaction.seller.user.first_name }} {{ transaction.seller.user.last_name }}</a></strong></span>
+                                            <span> &dollar;{{ transaction.product.price }} </span>
+                                            <span>for <a href="{% url 'product' transaction.product.id%}">{{ transaction.product.name }}</a></span>
+                                            <br>
+                                            <span class="transaction-time">at <i>{{ transaction.endTime }}</i></span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div> Rate {{ transaction.seller.user.first_name }}
+                                            <span>{% ratings transaction.seller icon_height=16 icon_width=16%}</span>
+                                        </div>
+                                    </div>
+                              </div>
+                           {% endfor %}
+                           {% for transaction in transaction_seller_list %}
+                              <div class="container-for-record ">
+                                  <div class="photo-bind float-left">
+                                      {% if transaction.buyer.picture %}
+                                          <img src="{% url 'customer_photo' transaction.buyer.user.id%}" class="buyer-photo">
+                                      {% else %}
+                                          <img src="{% static 'flea_market/images/av.png'%}" class="buyer-photo" width="128">
+                                      {% endif %}
+                                      {% if transaction.seller.picture %}
+                                          <img src="{% url 'customer_photo' transaction.seller.id%}" class="seller-photo">
+                                      {% else %}
+                                          <img src="{% static 'flea_market/images/av.png'%}" class="seller-photo" width="128">
+                                      {% endif %}
+                                  </div>
+                                  <div class="transaction-info">
+                                       <div class="transaction-names">
+                                            <span><strong><a href="{% url 'buyer_page'  transaction.product.id %}">{{ transaction.buyer.user.first_name }} {{ transaction.buyer.user.last_name }}</a></strong></span>
+                                           <span>paid <strong>you</strong></span>
+                                           <span>&dollar;{{ transaction.product.price }}  </span>
+                                           <span>for <a href="{% url 'product' transaction.product.id%}">{{ transaction.product.name }}</a></span>
+                                       </div>
+                                      <div class="transaction-time">
+                                          <br>
+                                          at <span><i>{{ transaction.endTime }}</i></span>
+                                      </div>
+                                  </div>
+                              </div>
+                           {% endfor %}
+                      </div>
+                    </div>
+
+
+
+
+                    <div class="card">
+                      <div class="card-header" id="headingThree">
+                        <h2 class="mb-0">
+                          <button class="btn btn-menu collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            Product
+                          </button>
+                        </h2>
+                      </div>
+                      <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <div class="container-fluid mb-5">
+                                <span>
+                                    <h3>Item Bought</h3>
+                                      <div class="row">
+                                        <div class="card-columns" style="-webkit-column-count: 3; column-count: 3;">
+                                            {% for item in bought_items %}
+                                                <div class="cut-protect">
+                                                    <div class="card card-pin">
+                                                        <a href="{% url 'product' item.id %}" class="card-link">
+                                                            <div class="item_image_container item_image_container_pin" style="z-index: {{ forloop.revcounter }}{{ forloop.revcounter }}">
+                                                                <img class="card-img" src="{% url 'item-photo' item.id %}" alt="Card image">
+                                                                <div class="overlay">
+                                                                    <button class="item-button item-category">
+                                                                        {% for cat in categories %}
+                                                                            {% if item.cat_str == cat.name %}
+                                                                                <i class="item-icon-size material-icons prefix">{{ cat.icon_name }}</i>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </button>
+                                                                    {% if item.seller_id != customer.id %}
+                                                                        {% if item in customer.follow_item.all %}
+                                                                            <button class="item-button item-follow" id="item-follow-button-{{ item.id }}" style="transform: translateY(-30px)">
+                                                                                <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite</i>
+                                                                            </button>
+                                                                        {% else %}
+                                                                            <button class="item-button item-follow" id="item-follow-button-{{ item.id }}">
+                                                                                <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite_border</i>
+                                                                            </button>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                    <input class="hidden-item-id" type="hidden" value={{ item.id }}>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                      </div>
+                                </span>
+                                <hr>
+                                <span>
+                                    <h3>Item on Sale</h3>
+                                      <div class="row">
+                                        <div class="card-columns" style="-webkit-column-count: 3; column-count: 3;">
+                                            {% for item in on_sale_items %}
+                                                <div class="cut-protect">
+                                                    <div class="card card-pin">
+                                                        <a href="{% url 'product' item.id %}" class="card-link">
+                                                            <div class="item_image_container item_image_container_pin" style="z-index: {{ forloop.revcounter }}{{ forloop.revcounter }}">
+                                                                <img class="card-img" src="{% url 'item-photo' item.id %}" alt="Card image">
+                                                                <div class="overlay">
+                                                                    <button class="item-button item-category">
+                                                                        {% for cat in categories %}
+                                                                            {% if item.cat_str == cat.name %}
+                                                                                <i class="item-icon-size material-icons prefix">{{ cat.icon_name }}</i>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </button>
+                                                                    {% if item.seller_id != customer.id %}
+                                                                        {% if item in customer.follow_item.all %}
+                                                                            <button class="item-button item-follow" id="item-follow-button-{{ item.id }}" style="transform: translateY(-30px)">
+                                                                                <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite</i>
+                                                                            </button>
+                                                                        {% else %}
+                                                                            <button class="item-button item-follow" id="item-follow-button-{{ item.id }}">
+                                                                                <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite_border</i>
+                                                                            </button>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                    <input class="hidden-item-id" type="hidden" value={{ item.id }}>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                      </div>
+                                </span>
+                                <hr>
+                                <span>
+                                    <h3>Item Sold</h3>
+                                      <div class="row">
+                                        <div class="card-columns" style="-webkit-column-count: 3; column-count: 3;">
+                                            {% for item in sold_items %}
+                                                <div class="cut-protect">
+                                                    <div class="card card-pin">
+                                                        <a href="{% url 'product' item.id %}" class="card-link">
+                                                            <div class="item_image_container item_image_container_pin" style="z-index: {{ forloop.revcounter }}{{ forloop.revcounter }}">
+                                                                <img class="card-img" src="{% url 'item-photo' item.id %}" alt="Card image">
+                                                                <div class="overlay">
+                                                                    <button class="item-button item-category">
+                                                                        {% for cat in categories %}
+                                                                            {% if item.cat_str == cat.name %}
+                                                                                <i class="item-icon-size material-icons prefix">{{ cat.icon_name }}</i>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </button>
+                                                                    {% if item.seller_id != customer.id %}
+                                                                        {% if item in customer.follow_item.all %}
+                                                                            <button class="item-button item-follow" id="item-follow-button-{{ item.id }}" style="transform: translateY(-30px)">
+                                                                                <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite</i>
+                                                                            </button>
+                                                                        {% else %}
+                                                                            <button class="item-button item-follow" id="item-follow-button-{{ item.id }}">
+                                                                                <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite_border</i>
+                                                                            </button>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                    <input class="hidden-item-id" type="hidden" value={{ item.id }}>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                      </div>
+                                </span>
+
+                            
+                                </div>
+                      </div>
+                    </div>
+
+
+                  </div>
+                  </div>
+ 
+        </div>
+   
+
+    </div>
+
+    <section class="mt-4 mb-5">
+    <div class="container-fluid">
+        <div class="row">
+            <h2> Product you may like: </h2>
+                <br/>
+            <div class="card-columns">
+                {% for item in recommend_items %}
+                    {% if item == 'null' %}
+                        <div class="card card-pin" id="padding"></div>
+                    {% else %}
+                        <div class="cut-protect">
+                            <div class="card card-pin">
+                                <a href="{% url 'product' item.id %}" class="card-link">
+                                    <div class="item_image_container item_image_container_pin" style="z-index: {{ forloop.revcounter }}{{ forloop.revcounter }}">
+                                        <img class="card-img" src="{% url 'item-photo' item.id %}" alt="Card image">
+                                        <div class="overlay">
+                                            <button class="item-button item-category">
+                                                {% for cat in categories %}
+                                                    {% if item.cat_str == cat.name %}
+                                                        <i class="item-icon-size material-icons prefix">{{ cat.icon_name }}</i>
+                                    {#                                                <div class="item-info-text item-category">{{ cat.name }}</div>#}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </button>
+                                            {% if item in customer.follow_item.all %}
+                                                <button class="item-button item-follow" id="item-follow-button-{{ item.id }}" style="transform: translateY(-30px)">
+                                                    <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite</i>
+                                                </button>
+                                            {% else %}
+                                                <button class="item-button item-follow" id="item-follow-button-{{ item.id }}">
+                                                    <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite_border</i>
+                                                </button>
+                                            {% endif %}
+                                            <input class="hidden-item-id" type="hidden" value={{ item.id }}>
+                                        </div>
+                                    </div>
+                                </a>
+
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    </section>
+
+    </main>
+{% endblock %}
+

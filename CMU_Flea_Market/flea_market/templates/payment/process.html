@@ -1,0 +1,25 @@
+{% extends "flea_market/base.html" %}
+{% load static %}
+
+{% block title%}
+    <title>Pay using PayPal</title>
+{% endblock %}
+
+{% block css_js %}
+{% endblock %}
+
+{% block body %}
+    <section class="bg-gray200 pt-5 pb-5">
+        <div class="container">
+
+                 <article class="card">
+                    <div class="card-body">
+                        <div class="form-for-paypal">
+                            <h1>Purchase with PayPal</h1>
+                            {{ form.render }}
+                        </div>
+                    </div>
+                 </article>
+        </div>
+    </section>
+{% endblock %}

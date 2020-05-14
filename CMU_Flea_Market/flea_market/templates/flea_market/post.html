@@ -1,0 +1,107 @@
+{% extends "flea_market/base.html" %}
+{% load static %}
+
+{% block title%}
+    <title>Post</title>
+{% endblock %}
+
+{% block css_js %}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css">
+    <link rel='stylesheet' href='https://cdn.materialdesignicons.com/1.1.34/'>
+    <link rel="stylesheet" href="{% static 'flea_market/css/post.css' %}?{% now 'U' %}">
+    <script src="https://unpkg.com/swiper/js/swiper.min.js"></script>
+    <script src="{% static 'flea_market/js/post.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <main role="main">
+    <section class="pt-5 pb-5" style="height: 596px">
+        <div class="preview-container">
+            <div class="info-overlay" style="margin-left: 15px; margin-top: 15px; color: royalblue;">
+                <i class="material-icons prefix" id="item-category" style="font-size: 30px">person</i>
+            </div>
+            <div class="info-overlay" style="right: 15px; margin-top: 15px; color: royalblue">
+                <p style="color: coral; font-size: 20px; font-weight: bold" id="item-price"></p>
+            </div>
+            <div style="margin: 55px auto auto auto; width: 70%; text-align: center">
+                <img src="" alt="" id="preview-image">
+            </div>
+            <div style="margin: 10px auto auto auto; text-align: center">
+                <div class="post-product-name"><p style="color: white; font-size: 20px; font-weight: bold" id="item-name"></p></div>
+                <div class="post-product-status"><p style="color: #666666; font-size: 20px; font-weight: bold" id="item-status"></p></div>
+            </div>
+            <div style="margin-left: 15px">
+                <p style="color: floralwhite; font-size: 16px;" id="item-description"></p>
+            </div>
+        </div>
+        <div class="container">
+            <div style="">
+            <div class="row justify-content-center">
+                <div class="col-md-6" style="border-left: darkred solid 3px; border-right: darkred solid 3px;">
+                    <article class="card">
+                        <div class="card-body">
+                            <form enctype="multipart/form-data" class="post-form" id="post-form" method="post" action="{% url 'post' user.id%}">
+                                 <div class="upload-product">
+                                         <div class="swiper-container">
+                                                <div class="swiper-wrapper">
+                                                    {% for field in post_form.visible_fields %}
+                                                        <div class="swiper-slide">
+                                                            <div class="post-product-tag">
+                                                                <i class="material-icons prefix font-size">{{ field.help_text }}</i>
+                                                                <span class="post-tag-text">{{ field.label_tag }} </span>
+                                                            </div>
+                                                            <div class='post-product-field md-form'>
+                                                                {% if field.help_text == 'build' %}
+                                                                    <div class='post-product-field md-form'>
+                                                                        Old&nbsp;&nbsp;&nbsp;{{ field }}&nbsp;&nbsp;&nbsp;New
+                                                                    </div>
+                                                                {% elif field.help_text == 'image' %}
+                                                                    {{ field }}
+                                                                    <small class="d-block">
+                                                                        <button id="file-button" class="btn btn-sm" style="background-color: coral; color: white">Choose a picture</button>
+                                                                    </small>
+                                                                {% else %}
+                                                                    {{ field }}
+                                                                {% endif %}
+                                                            </div>
+
+                                                            {% if field.help_text == 'comment' %}
+                                                                <div class="submit-post-button">
+                                                                    {% csrf_token %}
+                                                                    <small class="d-block">
+                                                                        <button class="btn btn-sm btn-gray200" type="submit" style="background-color: darkgreen; color: white">Post</button>
+                                                                    </small>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="swiper-pagination"></div>
+                                   </div>
+                                  <script>
+                                    var swiper = new Swiper('.swiper-container', {
+                                        direction: 'horizontal',
+                                        slidesPerView: 1,
+                                        spaceBetween: 30,
+                                        mousewheel: true,
+                                        pagination: {
+                                          el: '.swiper-pagination',
+                                          clickable: true,
+                                        },
+                                    });
+                                  </script>
+                                 </div>
+                            </form>
+                        </div>
+                    </article>
+                </div>
+            </div>
+            </div>
+        </div>
+
+    </section>
+
+    </main>
+{% endblock %}

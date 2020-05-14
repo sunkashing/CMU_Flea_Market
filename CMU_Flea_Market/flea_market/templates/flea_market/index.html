@@ -1,0 +1,115 @@
+{% extends "flea_market/base.html" %}
+{% load static %}
+
+{% block title%}
+    <title>Index</title>
+{% endblock %}
+
+{% block css_js %}
+    <script src="{% static 'flea_market/js/index.js'%}?{% now 'U' %}"></script>
+{% endblock %}
+
+{% block body %}
+
+    <main role="main" style="height: auto">
+
+        <section class="mt-4 mb-5">
+            <div class="container mb-4">
+
+                {% if not query %}
+                    <div class="row">
+                        <nav class="navbar navbar-expand-lg navbar-light bg-white pl-2 pr-2">
+                            <button class="navbar-light navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExplore" aria-controls="navbarsDefault" aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                            <div class="collapse navbar-collapse" id="navbarsExplore">
+                                <ul class="navbar-nav">
+                                    <li class="nav-item">
+                                        {% if category == "*" %}
+                                            <i class="material-icons prefix" style="vertical-align: bottom; color: darkred;">list</i>
+                                            <a class="nav-link active" href="{% url 'search' %}">All</a>
+                                            <div class="item-nums" style="color: darkred">{{ item_nums }}</div>
+                                        {% else %}
+                                            <i class="material-icons prefix" style="vertical-align: bottom">list</i>
+                                            <a class="nav-link" href="{% url 'search' %}">All</a>
+                                            <div class="item-nums">{{ item_nums }}</div>
+                                        {% endif %}
+                                    </li>
+                                    {% for cat in categories %}
+                                        <li class="nav-item">
+                                            {% if category == cat.name %}
+                                                <i class="material-icons prefix" style="vertical-align: bottom; color: darkred">{{ cat.icon_name }}</i>
+                                                <a class="nav-link active" href="{% url 'index' cat.name %}">{{ cat.name }}</a>
+                                                <div class="item-nums" style="color: darkred">{{ cat.size }}</div>
+                                            {% else %}
+                                                <i class="material-icons prefix" style="vertical-align: bottom">{{ cat.icon_name }}</i>
+                                                <a class="nav-link" href="{% url 'index' cat.name %}">{{ cat.name }}</a>
+                                                <div class="item-nums">{{ cat.size }}</div>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort By</a>
+                                        <div class="dropdown-menu shadow-lg" aria-labelledby="dropdown01">
+                                            <a class="dropdown-item" href="{% url 'sort_by_popularity' category %}">Popularity</a>
+                                            <a class="dropdown-item" href="{% url 'sort_by_distance' category %}">Distance</a>
+                                            <a class="dropdown-item" href="{% url 'sort_by_price_asc' category %}">Price↑</a>
+                                            <a class="dropdown-item" href="{% url 'sort_by_price_desc' category %}">Price↓</a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                {% else %}
+                    <h1 class="font-weight-bold title">Result</h1>
+                {% endif %}
+            </div>
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="card-columns">
+                        {% for item in items %}
+                            {% if item == 'null' %}
+                                <div class="card card-pin" id="padding"></div>
+                            {% else %}
+                                <div class="cut-protect">
+                                    <div class="card card-pin">
+                                        <a href="{% url 'product' item.id %}" class="card-link">
+                                            <div class="item_image_container item_image_container_pin" style="z-index: {{ forloop.revcounter }}{{ forloop.revcounter }}">
+                                                <img class="card-img" src="{% url 'item-photo' item.id %}" alt="Card image">
+                                                <div class="overlay">
+                                                    <button class="item-button item-category">
+                                                        {% for cat in categories %}
+                                                            {% if item.cat_str == cat.name %}
+                                                                <i class="item-icon-size material-icons prefix">{{ cat.icon_name }}</i>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </button>
+                                                    {% if item.seller_id != customer.id %}
+                                                        {% if item in customer.follow_item.all %}
+                                                            <button class="item-button item-follow" id="item-follow-button-{{ item.id }}" style="transform: translateY(-30px)">
+                                                                <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite</i>
+                                                            </button>
+                                                        {% else %}
+                                                            <button class="item-button item-follow" id="item-follow-button-{{ item.id }}">
+                                                                <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite_border</i>
+                                                            </button>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    <input class="hidden-item-id" type="hidden" value={{ item.id }}>
+                                                </div>
+                                            </div>
+                                        </a>
+
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+{% endblock %}

@@ -1,0 +1,134 @@
+html,
+body {
+    height: 100%;
+}
+html {
+    display: table;
+    margin: auto;
+}
+body {
+    display: table-cell;
+    vertical-align: middle;
+    background: #4ECDC4;
+}
+
+#login-page {
+   width: 500px;
+}
+
+
+.card {
+     position: absolute;
+     left: 50%;
+     top: 50%;
+     -moz-transform: translate(-50%, -50%);
+     -webkit-transform: translate(-50%, -50%);
+     -ms-transform: translate(-50%, -50%);
+     -o-transform: translate(-50%, -50%);
+     transform: translate(-50%, -50%);
+}
+
+.errorlist {
+    vertical-align: middle;
+    text-align: center;
+    color: red;
+    font-weight: bold;
+}
+
+#click_button {
+    position: center;
+    font-size: 10px;
+}
+
+#locating {
+    color: black;
+    margin-left: 15px;
+}
+
+.block_title {
+    font-size: 28px;
+    font-weight: bold;
+    border-radius: 15px;
+    color: #666;
+    font-family: Serif, monospace;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.category_container {
+    min-height: 270px;
+}
+
+.categories {
+    /*border-radius: 15px;*/
+    /*box-shadow: 1px 8px 16px 1px rgba(0,0,0,0.8);*/
+    text-align: center;
+    margin-top: 20px;
+    height: 200px;
+    overflow: auto;
+}
+
+.category {
+    display: inline-block;
+    margin: 0 20px 0;
+}
+
+.category_picture_container {
+    position: relative;
+    margin: 30px auto 20px;
+    width: 100px;
+    height: 100px;
+    box-shadow: none;
+    border-radius: 15px;
+    font-size: 40px;
+}
+
+.category_picture {
+    position: absolute;
+    margin:auto;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    display: block;
+    width: auto;
+	height: auto;
+	max-width: 90%;
+	max-height: 90%;
+}
+
+.category_name {
+    color: #666;
+    font-size: 15px;
+    font-family: Serif, monospace;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.font-size {
+    margin: 15px auto;
+    font-size: 64px;
+}
+
+.ok-button-div {
+    margin-top: 40px;
+    text-align: center;
+}
+
+#ok-button {
+    font-size: 20px;
+}
+
+.cancel-button-div {
+    margin-top: 50px;
+    text-align: right;
+}
+
+#cancel-button {
+
+}
+
+

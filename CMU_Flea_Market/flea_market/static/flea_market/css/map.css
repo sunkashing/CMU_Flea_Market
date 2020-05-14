@@ -1,0 +1,20 @@
+#map {
+    /* overflow:visible; */
+    margin: auto;
+    width: 500px;
+    height: 500px;
+        
+    /* background-color: grey; */
+    margin: auto;
+    
+    }
+
+#product_map{
+    overflow:visible;
+    margin: auto;
+    width: auto;
+    height: 80%;
+    background-color: grey;
+    margin: auto;
+    
+    }

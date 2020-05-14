@@ -1,0 +1,30 @@
+
+
+.preview-container {
+    position: absolute;
+    float: left;
+    margin-left: 40px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    max-width: 400px;
+    width: 300px;
+    height: auto;
+    min-height: 500px;
+    border-radius: 15px;
+    background-color: rgb(34, 44, 57);
+}
+
+.container {
+    margin-top: 129px;
+}
+
+.info-overlay {
+    position: absolute;
+}
+
+.post-product-name {
+    display: inline-block;
+}
+.post-product-status {
+    display: inline-block;
+}

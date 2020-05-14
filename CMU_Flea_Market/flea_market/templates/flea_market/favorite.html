@@ -1,0 +1,56 @@
+{% extends "flea_market/base.html" %}
+{% load static %}
+
+{% block title%}
+    <title>Favorite</title>
+{% endblock %}
+
+{% block css_js %}
+    <script src="{% static 'flea_market/js/favorite.js'%}?{% now 'U' %}"></script>
+{% endblock %}
+
+{% block body %}
+    {% for cat in categories %}
+        <div class="cat-container">
+            <button class="btn btn-menu collapsed" type="button" style="margin-left:20px; text-transform: uppercase;">
+                {{ cat.name }}
+            </button>
+            <div class="container-fluid" style="border-left: darkred solid 4px;">
+                <div class="row">
+                    <div class="card-columns">
+                        {% for item in favorite_items %}
+                            {% if item.cat_str == cat.name %}
+                                <div class="cut-protect">
+                                    <div class="card card-pin">
+                                        <a href="{% url 'product' item.id %}" class="card-link">
+                                            <div class="item_image_container item_image_container_pin" style="z-index: {{ forloop.revcounter }}{{ forloop.revcounter }}">
+                                                <img class="card-img" src="{% url 'item-photo' item.id %}" alt="Card image">
+                                                <div class="overlay">
+                                                    <button class="item-button item-category">
+                                                        {% for cat in categories %}
+                                                            {% if item.cat_str == cat.name %}
+                                                                <i class="item-icon-size material-icons prefix">{{ cat.icon_name }}</i>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </button>
+                                                    <button class="item-button item-follow" id="item-follow-button-{{ item.id }}" style="transform: translateY(-30px)">
+                                                        <i class="item-icon-size material-icons prefix" id="item-follow-{{ item.id }}">favorite</i>
+                                                    </button>
+                                                    <input class="hidden-item-id" type="hidden" value={{ item.id }}>
+                                                </div>
+                                            </div>
+                                        </a>
+
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if not forloop.last %}
+            <hr>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
